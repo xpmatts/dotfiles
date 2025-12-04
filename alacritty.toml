@@ -1,0 +1,11 @@
+
+general.import = ["~/.config/alacritty/themes/themes/newtheme.toml"]
+
+
+[terminal]
+[terminal.shell]
+program = "/usr/bin/fish"
+
+
+[window]
+opacity = 0.4

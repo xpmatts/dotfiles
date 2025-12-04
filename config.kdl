@@ -1,0 +1,155 @@
+// Niri Configuration - Converted from Hyprland
+// Save this to ~/.config/niri/config.kdl
+
+// --- Input Configuration ---
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            // variant ""
+            // options ""
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        // disable-while-typing is usually handled by libinput/compositor defaults
+    }
+
+    mouse {
+        // Niri doesn't have a direct equivalent for 'sensitivity' in the same way,
+        // but you can map specific devices if needed.
+    }
+}
+
+prefer-no-csd
+
+// --- Output (Monitor) Configuration ---
+// Niri auto-detects, but we can force your 1080p setting.
+output "eDP-1" {
+    mode "1920x1080@60"
+    scale 1.0
+    position x=0 y=0
+}
+
+// --- Layout & Look ---
+layout {
+    // Niri is a scrolling tiling window manager.
+    // 'gaps' here replaces gaps_in/gaps_out
+    gaps 4
+
+    // Center the focused column
+    center-focused-column "never"
+
+    // Visual style for the focus ring (active border)
+    focus-ring {
+        width 2
+        active-color "#595959" // rgba(255,255,255,100)
+        inactive-color "#595959" // rgba(595959aa)
+    }
+
+    // Niri doesn't support 'blur' or 'shadows' directly in the config
+    // in the same granular way Hyprland does yet, but it handles decorations internally.
+
+    // Default column width (closest approximation to 'dwindle' sizing)
+    default-column-width { proportion 0.5; }
+}
+
+// --- Autostart ---
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+spawn-at-startup "waybar"    // Status bar
+// Environment Variables are usually better set in a wrapper script or .profile,
+// but Niri reads your environment.
+// You should export GTK_THEME and XDG_CURRENT_DESKTOP before starting niri.
+
+// --- Keybindings ---
+binds {
+    // Mod key: Super (Windows key)
+    Mod+Return { spawn "alacritty"; }
+    Mod+Shift+Return { spawn "alacritty"; }
+
+    // Program launchers
+    Mod+R { spawn "wofi" "--show" "drun"; }
+    Mod+Space { spawn "wofi" "--show" "drun"; }
+    Mod+E { spawn "dolphin"; }
+    Mod+B { spawn "zen-browser"; }
+    Mod+Z { spawn "zeditor"; }
+    Mod+Escape { spawn "hyprlock"; }
+
+    // Window Management
+    Mod+W { close-window; }
+    Mod+M { quit; }
+
+    // Niri uses columns.
+    // Hyprland 'left/right' moves focus; Niri 'left/right' moves focus between columns.
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }     // Only relevant if you stack windows in a column
+    Mod+Down  { focus-window-down; }
+
+    // Move windows (columns)
+    Mod+Shift+Left  { move-column-left; }
+    Mod+Shift+Right { move-column-right; }
+
+    // Workspaces
+    // Niri scrolls horizontally, but you can jump to specific indices (1-9)
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    // Floating (Niri handles floating differently, but this is the toggle)
+    // Note: Niri is strictly tiling; floating is usually temporary or dialog-based.
+    // There isn't a direct "toggle floating" binding in standard Niri yet
+    // like Hyprland, but we can consume windows into a column or expel them.
+    // Mod+K { ... } // Omitted as Niri handles this differently.
+
+    // Audio / Brightness
+    XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "-l" "1" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute        { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute     { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+
+    XF86MonBrightnessUp   { spawn "brightnessctl" "-e4" "-n2" "set" "5%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "-e4" "-n2" "set" "5%-"; }
+
+    XF86AudioNext { spawn "playerctl" "next"; }
+    XF86AudioPause { spawn "playerctl" "play-pause"; }
+    XF86AudioPlay { spawn "playerctl" "play-pause"; }
+    XF86AudioPrev { spawn "playerctl" "previous"; }
+
+    // Mouse Wheel Scroll (for switching columns/workspaces)
+    // Niri handles trackpad scrolling natively.
+    // You can bind Mod+Wheel to scroll the view.
+    Mod+WheelScrollDown { focus-column-right; }
+    Mod+WheelScrollUp   { focus-column-left; }
+}
+
+// --- Window Rules ---
+// Niri uses specific rules to force sizes or behaviors
+window-rule {
+    // Example: make image viewers floating or a specific size
+    // match app-id="eog"
+    // open-floating true
+    match app-id="Alacritty"
+    draw-border-with-background false
+}
+
+// Animations are built-in and generally not granularly configurable in KDL yet,
+// but Niri has smooth defaults similar to your "almostLinear" bezier.
